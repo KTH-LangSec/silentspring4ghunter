@@ -22,6 +22,8 @@ benchmark-npm-packages/
 .idea/
 _ReSharper.Caches/
 
-# ODGen logs 
+# ODGen logs
 scripts/logs/
 scripts/run_log.log
+
+raw-data/gadgets.static-analysis.tmp/

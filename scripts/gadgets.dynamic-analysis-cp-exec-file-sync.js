@@ -12,6 +12,7 @@ function poluteAll() {
     props.push("contextExtensions");
     for (let i = 0; i < props.length; i++) {
         let currProp = props[i];
+        if (currProp === "status") continue
         if (!proto.hasOwnProperty(currProp) && currProp != "get" && props[i] != "set" && props[i] != "writable" && props[i] != "enumerable" && props[i] != "value" && props[i] != "prototype" && props[i] != "__proto__" && props[i] != 4)
             Object.defineProperty(proto, currProp, { get: function () { if (this[currProp + "cs"]) return this[currProp + "cs"]; if (currProp != "configurable" && !banned.includes(currProp)) accessed.add(currProp); return undefined; }, set: function (val) { this[currProp + "cs"] = val } });
     }
@@ -36,26 +37,11 @@ function findProp(cb) {
 }
 
 const cp = require("child_process");
-const vm = require("vm");
+
 poluteAll();
 
 try {
-    cp.spawnSync("ls");
-} catch (e) {
-    console.log(e)
-}
-
-try {
-    vm.runInNewContext("1+1");
-    global.text = ' '
-    const fn = vm.compileFunction(`console.log('' + text)`);
-    fn();
-} catch (e) {
-    console.log(e)
-}
-
-try {
-    require("bytes");
+    cp.execFileSync("ls", {});
 } catch (e) {
     console.log(e)
 }

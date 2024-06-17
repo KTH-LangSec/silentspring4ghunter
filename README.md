@@ -1,4 +1,42 @@
-# Silent Spring: Prototype Pollution Leads to RCE in Node.js
+# Comparison to GHunter on Node.js v21.0.0
+
+## IMPORTANT
+
+To reproduce the results you MUST use Node.js v21.0.0. Ensure that running `node --version` outputs `v21.0.0`.
+
+## Running the comparison
+
+To run the comparison first clone with submodules recursively and checkout this branch:
+
+```shell
+git clone --recurse-submodules git@github.com:KTH-LangSec/silentspring4ghunter.git
+cd silentspring4ghunter
+git checkout comparison-node-21
+```
+
+Then perform the analysis by running:
+
+```shell
+./compare.sh
+```
+
+This will produce 9 folders in the `raw-data` directory, one for each API in Table 3 of the paper.
+The `ghunter.log` files in these folders contain the data presented in the table for that API, the rest of the files in these folder are the raw output from Silent Spring for that API.
+In the `ghunter.log` file the relevant information is present in the end.
+The value for `Candidates:` corresponds to the "GC" value in Table 3.
+The map printed after `all props:` contains the actual candidates, including true and false positives. Verifying these is a manual process.
+
+## Changes w.r.t. Silent Spring
+
+- Upgraded `benchmark-nodejs` to Node.js v21.0.0.
+- Applied `benchmark-nodejs.patch` to Node.js to fix relative path so that CodeQL can resolve internal paths.
+- Created `scripts/gadgets.dynamic-analysis-XYZ.js` files with new test cases for the comparison. This includes adjustments to the polluted properties w.r.t. `scripts/gadgets.dynamic-analysis.js` so as to avoid errors during the dynamic analysis.
+- Created `scripts/compare-to-ghunter.js` to parse Silent Spring output to generate an output for the comparison to GHunter.
+- Created `compare.sh` to run the comparison.
+
+---
+
+## Silent Spring: Prototype Pollution Leads to RCE in Node.js
 <p><a href="https://github.com/yuske/silent-spring/blob/master/silent-spring-full-version.pdf"><img alt="Silent Spring Paper Thumbnail" align="left" width="340" src="https://github.com/yuske/silent-spring/assets/2105787/f4a67155-42ff-4ed8-b87d-d2edf89a2ec8"></a></p>
 
 Prototype pollution is a dangerous vulnerability affecting prototype-based languages like JavaScript and the Node.js platform. It refers to the ability of an attacker to inject properties into an object's root prototype at runtime and subsequently trigger the execution of legitimate code gadgets that access these properties on the object's prototype, leading to attacks such as Denial of Service (DoS), privilege escalation, and Remote Code Execution (RCE). While there is anecdotal evidence that prototype pollution leads to RCE, current research does not tackle the challenge of gadget detection, thus only showing feasibility of DoS attacks, mainly against Node.js libraries.
@@ -57,7 +95,7 @@ The artifact implements static code analysis for detecting prototype pollution v
 
 ### Requirements
 #### Hardware
-We perform the experiments on an Intel Core i7-8850H CPU 2.60GHz, 16 GB RAM, and 50 GB of disk space. No specific hardware features are required. 
+We perform the experiments on an Intel Core i7-8850H CPU 2.60GHz, 16 GB RAM, and 50 GB of disk space. No specific hardware features are required.
 
 #### Software
 We originally run our experiments (except for ODGen evaluation) on Windows OS and presented these results in the paper. However, CodeQL and our evaluation scripts support Linux and provide similar results.
